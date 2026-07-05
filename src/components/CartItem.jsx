@@ -1,6 +1,6 @@
-import { Trash2 } from 'lucide-react';
-import { useCart } from '../context/CartContext';
-import QuantitySelector from './QuantitySelector';
+import { Trash2 } from "lucide-react";
+import { useCart } from "../context/CartContext";
+import QuantitySelector from "./QuantitySelector";
 
 export default function CartItem({ item }) {
   const { setQty, removeItem } = useCart();
@@ -12,22 +12,33 @@ export default function CartItem({ item }) {
         alt={item.name}
         className="h-16 w-16 shrink-0 rounded-xl object-cover"
       />
+
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-[color:var(--color-green-dark)]">{item.name}</p>
-        <p className="text-xs text-neutral-500">{item.weight}</p>
-        <p className="mt-1 font-display text-sm font-bold text-[color:var(--color-green-dark)]">
-          ₹{item.price * item.qty}
+        <h3 className="truncate text-sm font-semibold text-[color:var(--color-green-dark)]">
+          {item.name}
+        </h3>
+
+        {item.weight && (
+          <span className="mt-1 inline-block rounded-full bg-[color:var(--color-green-50)] px-2 py-0.5 text-[11px] font-medium text-[color:var(--color-green-dark)]">
+            {item.weight}
+          </span>
+        )}
+
+        <p className="mt-2 text-sm font-bold text-[color:var(--color-green-dark)]">
+          ₹{item.price} × {item.qty} = ₹{item.price * item.qty}
         </p>
       </div>
+
       <div className="flex shrink-0 flex-col items-end gap-2">
         <button
           type="button"
           aria-label={`Remove ${item.name}`}
           onClick={() => removeItem(item.id)}
-          className="text-neutral-300 transition active:scale-90 hover:text-red-500"
+          className="text-neutral-300 transition hover:text-red-500 active:scale-90"
         >
           <Trash2 size={16} />
         </button>
+
         <QuantitySelector
           size="sm"
           qty={item.qty}

@@ -26,13 +26,13 @@ const CATEGORY_MAP = {
   ghee: "Cooking Essentials",
   sugar: "Cooking Essentials",
   salt: "Cooking Essentials",
-  honey: "Cooking Essentials",
-  masalas: "Cooking Essentials",
   spices: "Cooking Essentials",
+  masalas: "Cooking Essentials",
+  honey: "Cooking Essentials",
 
   milk: "Dairy",
-  curd: "Dairy",
   butter: "Dairy",
+  curd: "Dairy",
   cheese: "Dairy",
   paneer: "Dairy",
   bread: "Dairy",
@@ -44,14 +44,15 @@ const CATEGORY_MAP = {
   "green tea": "Beverages",
   juices: "Beverages",
   "cold drinks": "Beverages",
-  "mineral water": "Beverages",
   "energy drinks": "Beverages",
+  "mineral water": "Beverages",
 
   biscuits: "Snacks",
   cookies: "Snacks",
   chips: "Snacks",
   chocolates: "Snacks",
   namkeen: "Snacks",
+  "dry fruits": "Snacks",
 
   soap: "Personal Care",
   shampoo: "Personal Care",
@@ -136,6 +137,7 @@ function parseCSV(text) {
 }
 function normalizeRow(headers, row) {
   const record = {};
+
   headers.forEach((header, i) => {
     record[header.trim()] = row[i] ?? "";
   });
@@ -144,8 +146,13 @@ function normalizeRow(headers, row) {
 
   return {
     id: String(record.id ?? "").trim(),
+    sku: String(record.sku ?? "").trim().toUpperCase(),
     name: record.name ?? "",
-    category: CATEGORY_MAP[rawCategory] || rawCategory,
+    weight: record.weight ?? "",
+
+    // Convert sheet category into display category
+    category: CATEGORY_MAP[rawCategory] ?? record.category,
+
     brand: record.brand ?? "",
     price: toNumber(record.price),
     image: record.image ?? "",
@@ -154,10 +161,8 @@ function normalizeRow(headers, row) {
     popular: toBoolean(record.popular),
     stock: record.stock === "" ? true : toBoolean(record.stock),
     displayOrder: toNumber(record.displayOrder, 999),
-    weight: record.weight ?? "",
   };
 }
-
 async function fetchFromSheet() {
   if (!PRODUCTS_SHEET_CSV_URL) throw new Error('No sheet URL configured');
   const res = await fetch(PRODUCTS_SHEET_CSV_URL, { cache: 'no-store' });
@@ -167,9 +172,10 @@ async function fetchFromSheet() {
   const [headerRow, ...dataRows] = rows;
   return dataRows.map((row) => normalizeRow(headerRow, row));
 }
-
 function getMockData() {
-  return MOCK_PRODUCTS.map((p) => ({ ...p }));
+  return MOCK_PRODUCTS
+    .filter((p) => p.stock)
+    .map((p) => ({ ...p }));
 }
 
 async function loadAllProducts({ force = false } = {}) {
@@ -177,10 +183,14 @@ async function loadAllProducts({ force = false } = {}) {
   if (isFresh && !force) return cache;
 
   try {
-    const products = await fetchFromSheet();
-    cache = products;
-    cacheTimestamp = Date.now();
-    return products;
+  const products = (await fetchFromSheet()).filter(
+  (product) => product.stock
+);
+
+cache = products;
+cacheTimestamp = Date.now();
+
+return products;
   } catch (err) {
     if (USE_MOCK_DATA_FALLBACK) {
       cache = getMockData();
@@ -232,26 +242,67 @@ async getProductsByCategory(categoryId) {
     return [...products].reverse().slice(0, limit);
   },
 
-  /** Realtime search across name, brand, category, description. */
-  async searchProducts(query) {
-    const products = await loadAllProducts();
-    const q = query.trim().toLowerCase();
-    if (!q) return [];
-    return sortByDisplayOrder(
-      products.filter((p) =>
-        [p.name, p.brand, p.category, p.description].some((field) =>
-          String(field).toLowerCase().includes(q)
-        )
-      )
-    );
-  },
+  /** Realtime search across name, SKU, weight, brand, category, description. */
+async searchProducts(query) {
+  const products = await loadAllProducts();
 
+  const q = query.trim().toLowerCase();
+
+  if (!q) return [];
+
+  // Split search into words
+  const words = q.split(/\s+/);
+
+  const results = products.filter((p) => {
+    const searchable = [
+      p.name,
+      p.sku,
+      p.weight,
+      p.brand,
+      p.category,
+      p.description,
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    // Every typed word must exist somewhere
+    return words.every((word) => searchable.includes(word));
+  });
+
+  console.log("Query:", q);
+  console.log("Results:", results);
+
+  return sortByDisplayOrder(results);
+},
+
+  /** Get product by ID */
   async getProductById(id) {
     const products = await loadAllProducts();
+
     return products.find((p) => p.id === String(id)) ?? null;
   },
 
-  /** Force a refresh, bypassing the cache. */
+  /** Get product by SKU */
+  async getProductBySku(sku) {
+    const products = await loadAllProducts();
+
+    return (
+      products.find(
+        (p) => p.sku?.toLowerCase() === sku.toLowerCase()
+      ) ?? null
+    );
+  },
+
+  /** Get all categories */
+  async getCategories() {
+    const products = await loadAllProducts();
+
+    return [...new Set(products.map((p) => p.category))]
+      .filter(Boolean)
+      .sort();
+  },
+
+  /** Force refresh */
   async refresh() {
     return loadAllProducts({ force: true });
   },

@@ -20,17 +20,18 @@ export function CartProvider({ children }) {
       if (existing) {
         return prev.map((i) => (i.id === product.id ? { ...i, qty: i.qty + qty } : i));
       }
-      return [
-        ...prev,
-        {
-          id: product.id,
-          name: product.name,
-          weight: product.weight,
-          price: product.price,
-          image: product.image,
-          qty,
-        },
-      ];
+     return [
+  ...prev,
+  {
+    id: product.id,
+    sku: product.sku,
+    name: product.name,
+    weight: product.weight,
+    price: product.price,
+    image: product.image,
+    qty,
+  },
+];
     });
   }, []);
 

@@ -29,10 +29,17 @@ export function buildOrderMessage({ items, phone, plot }) {
     const qty = Number(item.qty);
     const total = price * qty;
 
-    lines.push(
-      `${index + 1}. ${item.name}${item.weight ? ` (${item.weight})` : ""}`
-    );
-    lines.push(`   ₹${price} × ${qty} = ₹${total}`);
+    lines.push(`${index + 1}. *${item.name}*`);
+
+    if (item.weight) {
+      lines.push(`   📦 Weight : ${item.weight}`);
+    }
+
+    if (item.sku) {
+      lines.push(`   🏷️ SKU : ${item.sku}`);
+    }
+
+    lines.push(`   💰 ₹${price} × ${qty} = ₹${total}`);
     lines.push("");
   });
 
@@ -46,7 +53,11 @@ export function buildOrderMessage({ items, phone, plot }) {
 }
 
 export function getWhatsAppOrderLink({ items, phone, plot }) {
-  const message = buildOrderMessage({ items, phone, plot });
+  const message = buildOrderMessage({
+    items,
+    phone,
+    plot,
+  });
 
   return `https://wa.me/${ADMIN_WHATSAPP_NUMBER}?text=${encodeURIComponent(
     message

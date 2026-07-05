@@ -6,7 +6,7 @@ export const STORE = {
   name: "AADITRI SV GENERAL STORE",
   brand: "AADITRI",
   tagline: "Fresh Groceries, Daily Essentials & Snacks",
-  address: "Main Road, Rajamahendravaram, Andhra Pradesh",
+  address: "AADITRI,Guntur, Andhra Pradesh",
   hours: "7:00 AM – 10:00 PM, All Days",
 };
 
@@ -23,19 +23,18 @@ export const PRODUCTS_SHEET_CSV_URL =
 export const USE_MOCK_DATA_FALLBACK = false;
 
 export const CATEGORIES = [
-  { id: "staples", name: "Staples", emoji: "🌾" },
-  { id: "vegetables", name: "Vegetables", emoji: "🥦" },
-  { id: "fruits", name: "Fruits", emoji: "🍎" },
-  { id: "dairy", name: "Dairy", emoji: "🥛" },
-  { id: "snacks", name: "Snacks", emoji: "🍪" },
-  { id: "beverages", name: "Beverages", emoji: "🥤" },
-  { id: "personal-care", name: "Personal Care", emoji: "🧴" },
-  { id: "household", name: "Household", emoji: "🧹" },
-  { id: "masalas", name: "Masalas", emoji: "🌶️" },
-  { id: "bakery", name: "Bakery", emoji: "🍞" },
-  { id: "frozen", name: "Frozen", emoji: "🧊" },
-  { id: "baby-care", name: "Baby Care", emoji: "🍼" },
-  { id: "pooja", name: "Pooja Needs", emoji: "🪔" },
+  { id: "Staples", name: "Staples", emoji: "🌾" },
+  { id: "Vegetables", name: "Vegetables", emoji: "🥦" },
+  { id: "Fruits", name: "Fruits", emoji: "🍎" },
+  { id: "Dairy", name: "Dairy", emoji: "🥛" },
+  { id: "Snacks", name: "Snacks", emoji: "🍪" },
+  { id: "Beverages", name: "Beverages", emoji: "🥤" },
+  { id: "Cooking Essentials", name: "Cooking Essentials", emoji: "🫒" },
+  { id: "Pulses & Grains", name: "Pulses & Grains", emoji: "🌾" },
+  { id: "Personal Care", name: "Personal Care", emoji: "🧴" },
+  { id: "Home Care", name: "Home Care", emoji: "🧹" },
+  { id: "Baby Care", name: "Baby Care", emoji: "🍼" },
+  { id: "Stationery", name: "Stationery", emoji: "✏️" },
 ];
 
 export const STORAGE_KEYS = {
