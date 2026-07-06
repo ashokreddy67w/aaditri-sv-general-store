@@ -12,7 +12,7 @@ export const STORE = {
 
 // WhatsApp Number (Country Code + Number)
 // India = 91
-export const ADMIN_WHATSAPP_NUMBER = "919652085328";
+export const ADMIN_WHATSAPP_NUMBER = "7799911166";
 
 // Google Sheet CSV URL
 export const PRODUCTS_SHEET_CSV_URL =
